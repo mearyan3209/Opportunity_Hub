@@ -9,14 +9,11 @@
     "resolveJsonModule": true,
     "allowImportingTsExtensions": true,
     "moduleResolution": "bundler",
+    "allowJs": true,
+    "checkJs": false,
     "types": ["node", "vite/client"],
     "paths": {
       "@/*": ["./src/*"]
     }
-  },
-  "references": [
-    {
-      "path": "../../lib/api-client-react"
-    }
-  ]
+  }
 }
