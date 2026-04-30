@@ -1,0 +1,395 @@
+Build a complete FULL-STACK web application named **OpportunityHub**.
+
+IMPORTANT: Build this as a real working student capstone project, not a demo landing page and not an ecommerce clone.
+
+The app must be fully functional with:
+
+* Frontend
+* Backend
+* Database
+* Authentication
+* Admin panel
+* Real CRUD operations
+* Responsive UI
+
+---
+
+# PROJECT PURPOSE
+
+OpportunityHub helps students discover and prepare for:
+
+* Competitive Exams
+* Scholarships
+* Olympiads
+* Entrance Tests
+* Internships
+* Academic Opportunities
+
+It solves lack of awareness, scattered information, missed deadlines, and no preparation roadmap.
+
+---
+
+# REQUIRED TECH STACK
+
+Frontend:
+
+* React.js
+* Tailwind CSS
+* React Router
+* Axios
+
+Backend:
+
+* Node.js
+* Express.js
+
+Database:
+
+* MongoDB Atlas + Mongoose
+
+Authentication:
+
+* JWT login/register
+* bcrypt password hashing
+
+Charts:
+
+* Recharts or Chart.js
+
+---
+
+# UI THEME
+
+Use premium modern academic dashboard style:
+
+* White background
+* Indigo primary (#4F46E5)
+* Emerald accent (#10B981)
+* Rounded cards
+* Sidebar dashboard
+* Responsive mobile design
+* Clean typography
+* Attractive hover effects
+
+---
+
+# USER ROLES
+
+1. Student User
+2. Admin
+
+---
+
+# CORE PAGES TO BUILD
+
+## PUBLIC PAGES
+
+### 1. Landing Page
+
+Include:
+
+* Hero section
+* Heading: Discover Exams, Scholarships & Opportunities
+* Subtitle
+* CTA buttons
+* Features section
+* Stats section
+* Footer
+
+### 2. Login Page
+
+### 3. Register Page
+
+Fields:
+
+* Name
+* Email
+* Password
+* Education Level dropdown:
+
+  * School
+  * Class 11-12
+  * UG Aspirant
+  * College Student
+
+---
+
+# PROTECTED USER PAGES
+
+### 4. Dashboard
+
+Show:
+
+* Saved Opportunities count
+* Upcoming Deadlines count
+* Quiz Score average
+* Progress %
+* Recommended opportunities
+* Recent opportunities
+* Charts
+
+### 5. Opportunities Page
+
+Include:
+
+* Search bar
+* Filters:
+
+  * Category
+  * Level
+  * Upcoming / Past
+* Opportunity cards
+
+Each card shows:
+
+* Name
+* Category
+* Level
+* Deadline
+* Eligibility short text
+* Save button
+* View Details button
+
+### 6. Opportunity Details Page
+
+Show:
+
+* Full description
+* Eligibility
+* Important dates
+* Official website
+* Syllabus
+* Resources
+* PYQs
+* Quiz button
+* Bookmark button
+
+Use tabs:
+
+* Overview
+* Syllabus
+* Resources
+* PYQs
+* Quiz
+
+### 7. Quiz Page
+
+* MCQ questions
+* Submit button
+* Auto score
+* Retry
+* Save score to database
+
+### 8. Saved Opportunities Page
+
+Show bookmarked items.
+
+### 9. Profile Page
+
+Show:
+
+* User info
+* Saved opportunities
+* Quiz history
+* Progress summary
+
+---
+
+# ADMIN PANEL
+
+Admin can:
+
+* Add opportunity
+* Edit opportunity
+* Delete opportunity
+* Update deadlines
+* Add quizzes
+* Manage users
+
+---
+
+# OPPORTUNITY DATASET (VERY IMPORTANT)
+
+Seed realistic data for these categories:
+
+## SCHOOL LEVEL
+
+* NTSE
+* NMMS
+* IMO
+* NSO
+* IEO
+* NSTSE
+* IOQM
+* SOF Olympiads
+
+## UG ENTRANCE
+
+* JEE Main
+* JEE Advanced
+* NEET UG
+* CUET UG
+* IAT (IISER)
+* NEST
+* ISI Admission Test
+* BITSAT
+* VITEEE
+* CLAT
+* NDA
+
+## SCHOLARSHIPS
+
+* NSP Scholarship
+* INSPIRE Scholarship
+* HDFC Scholarship
+* Vidyasaarthi
+* Sitaram Jindal Scholarship
+* Reliance Foundation Scholarship
+* Tata Scholarship
+
+## COLLEGE / SKILL
+
+* Smart India Hackathon
+* Google Summer of Code
+* Coding Contests
+* Research Internships
+
+Total seed data: 30+ entries.
+
+---
+
+# DATABASE MODELS
+
+## User
+
+* name
+* email
+* password
+* role
+* educationLevel
+* savedOpportunities[]
+* progress
+* quizScores[]
+
+## Opportunity
+
+* title
+* category
+* level
+* description
+* eligibility
+* deadline
+* officialLink
+* syllabus[]
+* resources[]
+* pyqs[]
+* quiz[]
+
+## Quiz
+
+* question
+* options[]
+* answer
+* opportunityId
+
+---
+
+# REQUIRED API ROUTES
+
+## Auth
+
+POST /api/auth/register
+POST /api/auth/login
+GET /api/auth/me
+
+## Opportunities
+
+GET /api/opportunities
+GET /api/opportunities/:id
+POST /api/opportunities
+PUT /api/opportunities/:id
+DELETE /api/opportunities/:id
+
+## User
+
+POST /api/user/save/:id
+GET /api/user/saved
+POST /api/user/progress
+
+## Quiz
+
+GET /api/quiz/:opportunityId
+POST /api/quiz/submit
+
+---
+
+# LOGIC FEATURES
+
+## Deadline Logic
+
+If current date > deadline:
+
+* move item to Past Opportunities
+* still show resources/PYQs
+
+## Recommendation Logic
+
+Based on educationLevel:
+
+School → Olympiads / NMMS
+12th → JEE / NEET / CUET / IAT
+College → Hackathons / Scholarships / Internships
+
+## Progress Logic
+
+Track:
+
+* Saved items
+* Quiz attempts
+* Completion %
+* Topic progress
+
+---
+
+# EXTRA FEATURES (LOW LOGIC HIGH IMPACT)
+
+Include:
+
+* Countdown days left
+* Toast notifications
+* Dark mode
+* Loading skeletons
+* Smooth animations
+* Search suggestions
+* Responsive sidebar
+
+---
+
+# CODE REQUIREMENTS
+
+* Clean folder structure
+* Reusable components
+* Comments in code
+* Beginner understandable
+* No fake placeholder-only app
+* Real API integration required
+
+---
+
+# FINAL OUTPUT REQUIRED
+
+Generate:
+
+1. frontend folder
+2. backend folder
+3. README setup guide
+4. .env example
+5. MongoDB seed script
+
+Run locally with:
+
+npm install
+npm run dev
+
+IMPORTANT:
+Build feature-complete version as much as possible. Do not skip backend logic. Do not simplify into static website.  I HAVE TO BUILSD AS ITS NOTHING EXTRA , i m in 4th sem use tools tech mentioned heer nothing more
