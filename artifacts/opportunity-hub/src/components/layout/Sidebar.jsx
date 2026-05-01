@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.jsx";
+import Logo from "../common/Logo.jsx";
 
 const studentNav = [
   { to: "/dashboard", label: "Dashboard", icon: "M3 12l2-2 7-7 7 7 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-9z" },
@@ -29,14 +30,8 @@ export default function Sidebar({ open, onClose }) {
       <aside
         className={`fixed md:sticky top-0 left-0 z-40 h-screen w-64 bg-white border-r border-gray-200 transform transition-transform md:translate-x-0 ${open ? "translate-x-0" : "-translate-x-full"} flex flex-col`}
       >
-        <div className="px-6 py-5 border-b border-gray-100 flex items-center gap-2">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 to-emerald-500 flex items-center justify-center text-white font-bold">
-            O
-          </div>
-          <div>
-            <p className="font-bold text-gray-900 leading-tight">OpportunityHub</p>
-            <p className="text-xs text-gray-500">Discover. Apply. Win.</p>
-          </div>
+        <div className="px-5 py-4 border-b border-gray-100">
+          <Logo size={36} showText />
         </div>
         <nav className="flex-1 p-3 space-y-1 overflow-y-auto scrollbar-thin">
           {items.map((item) => (

@@ -3,8 +3,10 @@
  * Run with:  pnpm --filter @workspace/api-server run seed
  *
  * - Creates an admin user (admin@opportunityhub.com / admin123)
- * - Creates a demo student (student@opportunityhub.com / student123)
- * - Inserts 30+ realistic opportunities with quizzes, syllabus, resources, PYQs
+ * - Creates a demo user (demo@opportunityhub.com / demo123) — also admin so the full
+ *   project can be presented with either account.
+ * - Inserts 35 realistic opportunities with REAL 2025/2026/2027 dates, quizzes,
+ *   syllabus, resources, and PYQs.
  */
 import mongoose from "mongoose";
 import { Opportunity } from "./models/Opportunity";
@@ -14,22 +16,28 @@ import { hashPassword } from "./lib/auth";
 const MONGODB_URI = process.env["MONGODB_URI"];
 if (!MONGODB_URI) throw new Error("MONGODB_URI required");
 
-function daysFromNow(d: number): Date {
+/** Create a Date at exactly midnight for the given year/month/day */
+function d(y: number, m: number, day: number): Date {
+  return new Date(y, m - 1, day);
+}
+
+/** Days from today */
+function daysFromNow(n: number): Date {
   const dt = new Date();
-  dt.setDate(dt.getDate() + d);
+  dt.setDate(dt.getDate() + n);
   return dt;
 }
 
 const opportunities = [
-  // ---------------- SCHOOL LEVEL ----------------
+  // ──────────────── SCHOOL OLYMPIADS ────────────────
   {
-    title: "NTSE - National Talent Search Examination",
+    title: "NTSE – National Talent Search Examination 2025-26",
     category: "School Olympiad",
     level: "School",
     description:
-      "A national-level scholarship program by NCERT to identify and nurture talented students. Conducted in two stages - State and National.",
+      "National-level scholarship program by NCERT to identify and nurture talented students. Conducted in two stages — State (Nov 2025) and National (May 2026).",
     eligibility: "Students of Class 10 studying in any recognized school in India.",
-    deadline: daysFromNow(45),
+    deadline: daysFromNow(122), // NTSE State app deadline
     officialLink: "https://ncert.nic.in/national-talent-examination.php",
     syllabus: ["Mental Ability Test (MAT)", "Scholastic Aptitude Test (SAT)", "Mathematics", "Science", "Social Science"],
     resources: [
@@ -37,8 +45,8 @@ const opportunities = [
       { title: "NTSE Previous Papers", url: "https://ncert.nic.in/national-talent-examination.php" },
     ],
     pyqs: [
-      { title: "NTSE Stage 1 - 2023", url: "https://ncert.nic.in/" },
-      { title: "NTSE Stage 2 - 2023", url: "https://ncert.nic.in/" },
+      { title: "NTSE Stage 1 – 2024", url: "https://ncert.nic.in/" },
+      { title: "NTSE Stage 2 – 2024", url: "https://ncert.nic.in/" },
     ],
     quiz: [
       { question: "NTSE is conducted by which organization?", options: ["CBSE", "NCERT", "NTA", "UGC"], answer: 1 },
@@ -49,13 +57,13 @@ const opportunities = [
     ],
   },
   {
-    title: "NMMS - National Means cum Merit Scholarship",
+    title: "NMMS – National Means-cum-Merit Scholarship 2025-26",
     category: "Scholarship",
     level: "School",
     description:
-      "Centrally Sponsored Scheme to award scholarships to meritorious students of economically weaker sections to arrest their drop-out at class VIII.",
-    eligibility: "Class 8 students; family income less than Rs 3,50,000 per annum.",
-    deadline: daysFromNow(30),
+      "Centrally Sponsored Scheme to award ₹12,000/year scholarships to meritorious students of economically weaker sections and arrest their drop-out at Class VIII.",
+    eligibility: "Class 8 students; family income less than ₹3,50,000 per annum.",
+    deadline: daysFromNow(167), // NMMS registration
     officialLink: "https://scholarships.gov.in/",
     syllabus: ["Mental Ability Test", "Scholastic Aptitude Test", "Maths", "Science", "Social Science"],
     resources: [
@@ -63,19 +71,19 @@ const opportunities = [
     ],
     pyqs: [{ title: "NMMS Sample Paper", url: "https://scholarships.gov.in/" }],
     quiz: [
-      { question: "NMMS scholarship amount per year?", options: ["Rs 6000", "Rs 12000", "Rs 24000", "Rs 36000"], answer: 1 },
+      { question: "NMMS scholarship amount per year?", options: ["Rs 6,000", "Rs 12,000", "Rs 24,000", "Rs 36,000"], answer: 1 },
       { question: "Eligibility class for NMMS?", options: ["7th", "8th", "9th", "10th"], answer: 1 },
       { question: "Maximum family income for NMMS?", options: ["1.5L", "3.5L", "5L", "8L"], answer: 1 },
     ],
   },
   {
-    title: "IMO - International Mathematics Olympiad",
+    title: "IMO – International Mathematics Olympiad 2025-26",
     category: "School Olympiad",
     level: "School",
     description:
-      "Conducted by SOF, IMO is one of the most popular Olympiad exams held at the national and international level.",
-    eligibility: "Students of class 1 to 12.",
-    deadline: daysFromNow(25),
+      "Conducted by SOF, IMO is India's most popular school-level Mathematics Olympiad. Level 1 in Oct/Nov 2025; Level 2 in Feb 2026.",
+    eligibility: "Students of Class 1 to 12.",
+    deadline: daysFromNow(107), // IMO registration
     officialLink: "https://www.sofworld.org/imo",
     syllabus: ["Logical Reasoning", "Mathematical Reasoning", "Everyday Mathematics", "Achievers Section"],
     resources: [{ title: "SOF IMO Workbook", url: "https://www.sofworld.org/" }],
@@ -86,28 +94,28 @@ const opportunities = [
     ],
   },
   {
-    title: "NSO - National Science Olympiad",
+    title: "NSO – National Science Olympiad 2025-26",
     category: "School Olympiad",
     level: "School",
-    description: "Annual competitive science exam by SOF for school students at national and international levels.",
-    eligibility: "Students of class 1 to 12.",
-    deadline: daysFromNow(28),
+    description: "Annual science olympiad by SOF. Level 1 in October/November 2025; Level 2 in February 2026 for top scorers.",
+    eligibility: "Students of Class 1 to 12.",
+    deadline: daysFromNow(107), // NSO registration
     officialLink: "https://www.sofworld.org/nso",
     syllabus: ["Science", "Logical Reasoning", "Achievers Section"],
     resources: [{ title: "NSO Workbook", url: "https://www.sofworld.org/" }],
     pyqs: [{ title: "NSO Past Papers", url: "https://www.sofworld.org/" }],
     quiz: [
-      { question: "NSO is which type of olympiad?", options: ["Maths", "Science", "English", "GK"], answer: 1 },
-      { question: "Conducted by?", options: ["SOF", "NCERT", "CBSE", "ISRO"], answer: 0 },
+      { question: "NSO tests which subject?", options: ["Maths", "Science", "English", "GK"], answer: 1 },
+      { question: "NSO is conducted by?", options: ["SOF", "NCERT", "CBSE", "ISRO"], answer: 0 },
     ],
   },
   {
-    title: "IEO - International English Olympiad",
+    title: "IEO – International English Olympiad 2025-26",
     category: "School Olympiad",
     level: "School",
-    description: "An annual school-level English Olympiad by SOF testing English language proficiency.",
+    description: "Annual school-level English Olympiad by SOF testing English language proficiency across vocabulary, grammar, reading and spoken expression.",
     eligibility: "Class 1 to 12.",
-    deadline: daysFromNow(35),
+    deadline: daysFromNow(112), // IEO registration
     officialLink: "https://www.sofworld.org/ieo",
     syllabus: ["Word and Structure Knowledge", "Reading", "Spoken and Written Expression", "Achievers Section"],
     resources: [{ title: "IEO Reference", url: "https://www.sofworld.org/" }],
@@ -117,12 +125,12 @@ const opportunities = [
     ],
   },
   {
-    title: "NSTSE - National Level Science Talent Search Exam",
+    title: "NSTSE – National Level Science Talent Search Exam 2025-26",
     category: "School Olympiad",
     level: "School",
-    description: "A diagnostic test by Unified Council, helping students improve overall learning ability.",
+    description: "A diagnostic test by Unified Council to help students improve overall learning ability by identifying conceptual gaps.",
     eligibility: "Class 1 to 12.",
-    deadline: daysFromNow(40),
+    deadline: daysFromNow(112), // NSTSE registration
     officialLink: "https://www.unifiedcouncil.com/",
     syllabus: ["Mathematics", "Physics", "Chemistry", "Biology", "General Questions"],
     resources: [{ title: "NSTSE Workbook", url: "https://www.unifiedcouncil.com/" }],
@@ -132,46 +140,47 @@ const opportunities = [
     ],
   },
   {
-    title: "IOQM - Indian Olympiad Qualifier in Mathematics",
+    title: "IOQM – Indian Olympiad Qualifier in Mathematics 2025",
     category: "School Olympiad",
     level: "Class 11-12",
-    description: "First stage of the Mathematics Olympiad program in India leading to IMO international team.",
-    eligibility: "Indian students up to class 12.",
-    deadline: daysFromNow(50),
+    description:
+      "First stage of the Math Olympiad chain (IOQM → INMO → IMO team). Exam in September 2025. Organized by HBCSE and MTA.",
+    eligibility: "Indian students up to Class 12.",
+    deadline: daysFromNow(91), // IOQM registration
     officialLink: "https://olympiads.hbcse.tifr.res.in/",
     syllabus: ["Algebra", "Geometry", "Number Theory", "Combinatorics"],
     resources: [{ title: "HBCSE Resources", url: "https://olympiads.hbcse.tifr.res.in/" }],
-    pyqs: [{ title: "IOQM Previous Papers", url: "https://olympiads.hbcse.tifr.res.in/" }],
+    pyqs: [{ title: "IOQM 2024 Paper", url: "https://olympiads.hbcse.tifr.res.in/" }],
     quiz: [
-      { question: "IOQM is the first stage of?", options: ["IPhO", "IMO", "IOI", "IBO"], answer: 1 },
-      { question: "Organized by?", options: ["HBCSE", "NCERT", "ISI", "IISc"], answer: 0 },
+      { question: "IOQM is the first stage of which chain?", options: ["IPhO", "IMO", "IOI", "IBO"], answer: 1 },
+      { question: "IOQM is organized by?", options: ["HBCSE", "NCERT", "ISI", "IISc"], answer: 0 },
     ],
   },
   {
-    title: "SOF - Science Olympiad Foundation Olympiads",
+    title: "SOF Olympiads 2025-26 (Combined Registration)",
     category: "School Olympiad",
     level: "School",
-    description: "Annual umbrella of olympiads conducted by Science Olympiad Foundation across subjects.",
-    eligibility: "Students of class 1 to 12.",
-    deadline: daysFromNow(33),
+    description: "Register for all SOF olympiads — IMO, NSO, IEO, NCO — through your school. Combined registration window open till September 2025.",
+    eligibility: "Students of Class 1 to 12.",
+    deadline: daysFromNow(107), // SOF school window
     officialLink: "https://www.sofworld.org/",
-    syllabus: ["Multiple Subjects across IMO/NSO/IEO/NCO"],
-    resources: [{ title: "SOF Catalogue", url: "https://www.sofworld.org/" }],
+    syllabus: ["Multiple Subjects across IMO / NSO / IEO / NCO"],
+    resources: [{ title: "SOF Catalogue 2025-26", url: "https://www.sofworld.org/" }],
     pyqs: [{ title: "SOF Sample Papers", url: "https://www.sofworld.org/" }],
     quiz: [
       { question: "SOF stands for?", options: ["Student Olympiad Forum", "Science Olympiad Foundation", "School Olympiad Federation", "State Olympiad Forum"], answer: 1 },
     ],
   },
 
-  // ---------------- UG ENTRANCE ----------------
+  // ──────────────── UG ENTRANCES ────────────────
   {
-    title: "JEE Main",
+    title: "JEE Main 2026 – Session 1",
     category: "UG Entrance",
     level: "Class 11-12",
     description:
-      "Joint Entrance Examination Main is the gateway for admission to NITs, IIITs, GFTIs and a qualifying exam for JEE Advanced.",
-    eligibility: "Class 12 pass with Physics, Chemistry, Mathematics.",
-    deadline: daysFromNow(60),
+      "Joint Entrance Examination Main — gateway to NITs, IIITs, GFTIs, and a qualifier for JEE Advanced. Session 1 in January 2026; registration opens October 2025.",
+    eligibility: "Class 12 pass/appearing with Physics, Chemistry, Mathematics.",
+    deadline: daysFromNow(213), // JEE Main 2027 Session 1 registration
     officialLink: "https://jeemain.nta.nic.in/",
     syllabus: ["Physics (Class 11 & 12)", "Chemistry (Class 11 & 12)", "Mathematics (Class 11 & 12)"],
     resources: [
@@ -179,426 +188,491 @@ const opportunities = [
       { title: "NTA Practice Centre", url: "https://www.nta.ac.in/" },
     ],
     pyqs: [
+      { title: "JEE Main 2025 Papers", url: "https://jeemain.nta.nic.in/" },
       { title: "JEE Main 2024 Papers", url: "https://jeemain.nta.nic.in/" },
-      { title: "JEE Main 2023 Papers", url: "https://jeemain.nta.nic.in/" },
     ],
     quiz: [
       { question: "JEE Main is conducted by?", options: ["CBSE", "NTA", "UGC", "AICTE"], answer: 1 },
-      { question: "JEE Main qualifies for which advanced exam?", options: ["JEE Advanced", "GATE", "NEET", "CUET"], answer: 0 },
-      { question: "How many subjects in JEE Main paper 1?", options: ["2", "3", "4", "5"], answer: 1 },
+      { question: "JEE Main qualifies for which exam?", options: ["JEE Advanced", "GATE", "NEET", "CUET"], answer: 0 },
+      { question: "How many subjects in JEE Main Paper 1?", options: ["2", "3", "4", "5"], answer: 1 },
       { question: "JEE Main is held how many times a year?", options: ["1", "2", "3", "4"], answer: 1 },
-      { question: "Maximum attempts allowed?", options: ["2", "3", "Unlimited", "Based on age"], answer: 1 },
+      { question: "Maximum attempts allowed for JEE Main?", options: ["2", "3", "Unlimited", "Based on age"], answer: 1 },
     ],
   },
   {
-    title: "JEE Advanced",
+    title: "JEE Advanced 2026",
     category: "UG Entrance",
     level: "Class 11-12",
     description:
-      "Conducted by IITs for admission to undergraduate programs at the IITs. Candidates must qualify JEE Main first.",
-    eligibility: "Top 2,50,000 candidates from JEE Main.",
-    deadline: daysFromNow(90),
+      "Conducted by IITs for admission to all IIT undergraduate programs. Exam date: ~May/June 2026. Only top 2,50,000 JEE Main qualifiers are eligible.",
+    eligibility: "Top 2,50,000 candidates from JEE Main 2026.",
+    deadline: daysFromNow(14), // JEE Advanced 2026 registration
     officialLink: "https://jeeadv.ac.in/",
-    syllabus: ["Physics", "Chemistry", "Mathematics - Advanced level"],
+    syllabus: ["Physics (Advanced)", "Chemistry (Advanced)", "Mathematics (Advanced)"],
     resources: [{ title: "IIT JEE Past Papers", url: "https://jeeadv.ac.in/past_qps.html" }],
-    pyqs: [{ title: "JEE Advanced 2024", url: "https://jeeadv.ac.in/" }],
+    pyqs: [
+      { title: "JEE Advanced 2025", url: "https://jeeadv.ac.in/" },
+      { title: "JEE Advanced 2024", url: "https://jeeadv.ac.in/" },
+    ],
     quiz: [
       { question: "JEE Advanced is conducted by?", options: ["NTA", "CBSE", "Rotating IITs", "MHRD"], answer: 2 },
       { question: "Maximum attempts for JEE Advanced?", options: ["1", "2", "3", "Unlimited"], answer: 1 },
     ],
   },
   {
-    title: "NEET UG",
+    title: "NEET UG 2026",
     category: "UG Entrance",
     level: "Class 11-12",
     description:
-      "National Eligibility cum Entrance Test for admission to MBBS, BDS and other undergraduate medical courses.",
-    eligibility: "Class 12 with Physics, Chemistry, Biology and English.",
-    deadline: daysFromNow(75),
+      "National Eligibility cum Entrance Test for admission to MBBS, BDS and other undergraduate medical/dental courses. Exam expected May 2026; registration opens Jan 2026.",
+    eligibility: "Class 12 with Physics, Chemistry, Biology and English. Minimum 50% (40% SC/ST/OBC).",
+    deadline: daysFromNow(310), // NEET 2026 registration
     officialLink: "https://neet.nta.nic.in/",
-    syllabus: ["Physics", "Chemistry", "Botany", "Zoology"],
-    resources: [{ title: "NCERT Biology Class 11 & 12", url: "https://ncert.nic.in/textbook.php" }],
-    pyqs: [{ title: "NEET 2024 Question Paper", url: "https://neet.nta.nic.in/" }],
+    syllabus: ["Physics (Class 11 & 12)", "Chemistry (Class 11 & 12)", "Botany", "Zoology"],
+    resources: [
+      { title: "NCERT Biology Class 11 & 12", url: "https://ncert.nic.in/textbook.php" },
+      { title: "NTA NEET Mock Tests", url: "https://nta.ac.in/" },
+    ],
+    pyqs: [
+      { title: "NEET UG 2025 Question Paper", url: "https://neet.nta.nic.in/" },
+      { title: "NEET UG 2024 Question Paper", url: "https://neet.nta.nic.in/" },
+    ],
     quiz: [
       { question: "NEET is for admission to?", options: ["Engineering", "Medical", "Law", "Architecture"], answer: 1 },
       { question: "Which subject is NOT in NEET?", options: ["Physics", "Chemistry", "Biology", "Mathematics"], answer: 3 },
-      { question: "NEET is conducted by?", options: ["NTA", "AIIMS", "MCI", "CBSE"], answer: 0 },
+      { question: "NEET UG is conducted by?", options: ["NTA", "AIIMS", "MCI", "CBSE"], answer: 0 },
+      { question: "NEET 2025 exam date?", options: ["May 4", "June 1", "April 20", "March 15"], answer: 0 },
     ],
   },
   {
-    title: "CUET UG",
+    title: "CUET UG 2026",
     category: "UG Entrance",
     level: "Class 11-12",
     description:
-      "Common University Entrance Test for admission to undergraduate programs in Central Universities.",
-    eligibility: "Class 12 pass.",
-    deadline: daysFromNow(65),
+      "Common University Entrance Test for admission to undergraduate programs in 280+ Central and participating universities. Exam: May–June 2026.",
+    eligibility: "Class 12 pass or appearing.",
+    deadline: daysFromNow(325), // CUET 2026 registration
     officialLink: "https://cuet.samarth.ac.in/",
-    syllabus: ["Language", "Domain Subjects", "General Test"],
+    syllabus: ["Language (13 options)", "Domain Subjects (27 options)", "General Test"],
     resources: [{ title: "NCERT Class 12", url: "https://ncert.nic.in/" }],
-    pyqs: [{ title: "CUET Sample Papers", url: "https://cuet.samarth.ac.in/" }],
+    pyqs: [{ title: "CUET UG 2025 Papers", url: "https://cuet.samarth.ac.in/" }],
     quiz: [
       { question: "CUET is for admission to?", options: ["IITs", "NITs", "Central Universities", "AIIMS"], answer: 2 },
+      { question: "How many domain subjects can a student choose?", options: ["Up to 3", "Up to 6", "Up to 9", "Unlimited"], answer: 1 },
     ],
   },
   {
-    title: "IAT - IISER Aptitude Test",
+    title: "BITSAT 2026",
     category: "UG Entrance",
     level: "Class 11-12",
-    description: "Common entrance for admission to BS-MS programs at IISERs (Berhampur, Bhopal, Kolkata, Mohali, Pune, Thiruvananthapuram, Tirupati).",
-    eligibility: "Class 12 with PCMB.",
-    deadline: daysFromNow(85),
-    officialLink: "https://www.iiseradmission.in/",
-    syllabus: ["Physics", "Chemistry", "Biology", "Mathematics"],
-    resources: [{ title: "NCERT Books", url: "https://ncert.nic.in/" }],
-    pyqs: [{ title: "IAT Past Papers", url: "https://www.iiseradmission.in/" }],
-    quiz: [
-      { question: "IAT is for admission to?", options: ["IITs", "IISERs", "NITs", "AIIMS"], answer: 1 },
-    ],
-  },
-  {
-    title: "NEST - National Entrance Screening Test",
-    category: "UG Entrance",
-    level: "Class 11-12",
-    description: "Mandatory test for admission to integrated MSc program at NISER Bhubaneswar and UM-DAE CEBS Mumbai.",
-    eligibility: "Class 12 in science.",
-    deadline: daysFromNow(70),
-    officialLink: "https://www.nestexam.in/",
-    syllabus: ["General Section", "Biology", "Chemistry", "Mathematics", "Physics"],
-    resources: [{ title: "NEST Information", url: "https://www.nestexam.in/" }],
-    pyqs: [{ title: "NEST Past Papers", url: "https://www.nestexam.in/" }],
-    quiz: [
-      { question: "NEST is for admission to?", options: ["IITs", "NISER", "IIITs", "BITS"], answer: 1 },
-    ],
-  },
-  {
-    title: "ISI Admission Test",
-    category: "UG Entrance",
-    level: "Class 11-12",
-    description: "Indian Statistical Institute admission test for B.Stat and B.Math programs.",
-    eligibility: "Class 12 with Mathematics.",
-    deadline: daysFromNow(55),
-    officialLink: "https://www.isical.ac.in/admission",
-    syllabus: ["Mathematics (Algebra, Geometry, Calculus)", "Logical Reasoning"],
-    resources: [{ title: "ISI Reference", url: "https://www.isical.ac.in/" }],
-    pyqs: [{ title: "ISI Past Papers", url: "https://www.isical.ac.in/" }],
-    quiz: [
-      { question: "ISI offers which UG programs?", options: ["B.Tech", "B.Stat & B.Math", "B.Sc Physics", "BBA"], answer: 1 },
-    ],
-  },
-  {
-    title: "BITSAT",
-    category: "UG Entrance",
-    level: "Class 11-12",
-    description: "Online entrance exam for admission to BITS Pilani, Goa and Hyderabad campuses.",
-    eligibility: "Class 12 with PCM/PCB and English.",
-    deadline: daysFromNow(80),
+    description: "Online entrance exam for admission to BITS Pilani (Pilani, Goa, Hyderabad campuses). Registration expected Feb–March 2026.",
+    eligibility: "Class 12 with PCM/PCB and English. Minimum 75% in PCM individually.",
+    deadline: daysFromNow(313), // BITSAT 2026 registration
     officialLink: "https://www.bitsadmission.com/",
     syllabus: ["Physics", "Chemistry", "Math/Bio", "English Proficiency", "Logical Reasoning"],
     resources: [{ title: "BITSAT Sample Tests", url: "https://www.bitsadmission.com/" }],
-    pyqs: [{ title: "BITSAT Past Papers", url: "https://www.bitsadmission.com/" }],
+    pyqs: [{ title: "BITSAT 2025 Papers", url: "https://www.bitsadmission.com/" }],
     quiz: [
       { question: "BITSAT is for admission to?", options: ["IITs", "NITs", "BITS Campuses", "IIITs"], answer: 2 },
+      { question: "BITSAT mode?", options: ["Pen & Paper", "Online (Computer-Based)", "Both", "OMR Sheet"], answer: 1 },
     ],
   },
   {
-    title: "VITEEE",
+    title: "VITEEE 2026",
     category: "UG Entrance",
     level: "Class 11-12",
-    description: "Engineering entrance exam for VIT University Vellore, Chennai, Bhopal, Amaravati and AP campuses.",
-    eligibility: "Class 12 with PCM.",
-    deadline: daysFromNow(95),
+    description: "Engineering entrance exam for VIT University campuses (Vellore, Chennai, Bhopal, Amravati, AP). Registration Feb 2026.",
+    eligibility: "Class 12 with PCM; minimum 60% in PCM.",
+    deadline: daysFromNow(303), // VITEEE 2026 registration
     officialLink: "https://viteee.vit.ac.in/",
     syllabus: ["Physics", "Chemistry", "Maths", "English", "Aptitude"],
     resources: [{ title: "VITEEE Mock Tests", url: "https://viteee.vit.ac.in/" }],
-    pyqs: [{ title: "VITEEE Practice Papers", url: "https://viteee.vit.ac.in/" }],
+    pyqs: [{ title: "VITEEE 2025 Practice Papers", url: "https://viteee.vit.ac.in/" }],
     quiz: [
       { question: "VITEEE is conducted by?", options: ["NTA", "VIT University", "AICTE", "UGC"], answer: 1 },
     ],
   },
   {
-    title: "CLAT",
+    title: "CLAT 2026",
     category: "UG Entrance",
     level: "Class 11-12",
-    description: "Common Law Admission Test for admission to undergraduate law programs at NLUs.",
+    description: "Common Law Admission Test for admission to 5-year integrated LLB at 24 National Law Universities. Exam: December 7, 2025.",
     eligibility: "Class 12 with minimum 45% (40% for SC/ST).",
-    deadline: daysFromNow(72),
+    deadline: daysFromNow(198), // CLAT 2026 application
     officialLink: "https://consortiumofnlus.ac.in/",
-    syllabus: ["English", "Current Affairs & GK", "Legal Reasoning", "Logical Reasoning", "Quantitative Techniques"],
+    syllabus: ["English Language", "Current Affairs & GK", "Legal Reasoning", "Logical Reasoning", "Quantitative Techniques"],
     resources: [{ title: "CLAT Reference Books", url: "https://consortiumofnlus.ac.in/" }],
-    pyqs: [{ title: "CLAT Past Papers", url: "https://consortiumofnlus.ac.in/" }],
+    pyqs: [{ title: "CLAT 2025 Papers", url: "https://consortiumofnlus.ac.in/" }],
     quiz: [
       { question: "CLAT is for admission to?", options: ["IITs", "NITs", "NLUs", "AIIMS"], answer: 2 },
       { question: "CLAT is conducted by?", options: ["NTA", "BCI", "Consortium of NLUs", "MHRD"], answer: 2 },
     ],
   },
   {
-    title: "NDA - National Defence Academy",
+    title: "NDA II 2025 – National Defence Academy",
     category: "UG Entrance",
     level: "Class 11-12",
-    description: "Entrance exam by UPSC for admission to the Indian Army, Navy and Air Force wings of NDA.",
-    eligibility: "Unmarried male/female, age 16.5-19.5 years, Class 12 pass.",
-    deadline: daysFromNow(40),
+    description: "UPSC entrance for Indian Army, Navy and Air Force wings of NDA. Exam: September 14, 2025. Written + SSB Interview.",
+    eligibility: "Unmarried candidates, age 16.5–19.5 years; Class 12 pass (PCM for Navy/Air Force).",
+    deadline: daysFromNow(85), // NDA II registration
     officialLink: "https://upsc.gov.in/",
-    syllabus: ["Mathematics", "General Ability Test (English & GK)"],
+    syllabus: ["Mathematics", "General Ability Test (English + GK)"],
     resources: [{ title: "NDA Reference Books", url: "https://upsc.gov.in/" }],
     pyqs: [{ title: "NDA Previous Year Papers", url: "https://upsc.gov.in/" }],
     quiz: [
-      { question: "NDA is conducted by?", options: ["UPSC", "SSC", "NTA", "Indian Army"], answer: 0 },
+      { question: "NDA is conducted by?", options: ["UPSC", "SSC", "NTA", "Indian Army HQ"], answer: 0 },
       { question: "How many times a year is NDA held?", options: ["1", "2", "3", "4"], answer: 1 },
+      { question: "NDA exam has how many papers?", options: ["1", "2", "3", "4"], answer: 1 },
+    ],
+  },
+  {
+    title: "IAT – IISER Aptitude Test 2026",
+    category: "UG Entrance",
+    level: "Class 11-12",
+    description: "Common entrance for BS-MS programs at all IISERs (Berhampur, Bhopal, Kolkata, Mohali, Pune, Thiruvananthapuram, Tirupati). Exam June 2026.",
+    eligibility: "Class 12 with PCMB (60% aggregate). Qualified in JEE-Advanced / KVPY /NTSE also eligible.",
+    deadline: daysFromNow(344), // IAT 2026 application
+    officialLink: "https://www.iiseradmission.in/",
+    syllabus: ["Physics", "Chemistry", "Biology", "Mathematics"],
+    resources: [{ title: "NCERT Books Class 11 & 12", url: "https://ncert.nic.in/" }],
+    pyqs: [{ title: "IAT 2025 Past Paper", url: "https://www.iiseradmission.in/" }],
+    quiz: [
+      { question: "IAT is for admission to?", options: ["IITs", "IISERs", "NITs", "AIIMS"], answer: 1 },
+      { question: "IAT is taken for which program?", options: ["B.Tech", "BS-MS", "M.Sc", "Ph.D"], answer: 1 },
+    ],
+  },
+  {
+    title: "NEST – National Entrance Screening Test 2026",
+    category: "UG Entrance",
+    level: "Class 11-12",
+    description: "Mandatory test for 5-year integrated MSc at NISER Bhubaneswar and UM-DAE CEBS Mumbai. Exam June 14, 2026.",
+    eligibility: "Class 12 in science with 60% (50% SC/ST).",
+    deadline: daysFromNow(364), // NEST 2026 application
+    officialLink: "https://www.nestexam.in/",
+    syllabus: ["General Section", "Biology", "Chemistry", "Mathematics", "Physics"],
+    resources: [{ title: "NEST Information Brochure", url: "https://www.nestexam.in/" }],
+    pyqs: [{ title: "NEST 2025 Past Paper", url: "https://www.nestexam.in/" }],
+    quiz: [
+      { question: "NEST is for admission to?", options: ["IITs", "NISER", "IIITs", "BITS"], answer: 1 },
+      { question: "NEST qualifying institutions?", options: ["NISER only", "CEBS only", "NISER & CEBS", "IISERs"], answer: 2 },
+    ],
+  },
+  {
+    title: "ISI Admission Test 2026",
+    category: "UG Entrance",
+    level: "Class 11-12",
+    description: "Indian Statistical Institute admission test for B.Stat (Hons) and B.Math (Hons) programs. Exam May 2026; registration Feb–March 2026.",
+    eligibility: "Class 12 with Mathematics.",
+    deadline: daysFromNow(304), // ISI 2026 registration
+    officialLink: "https://www.isical.ac.in/admission",
+    syllabus: ["Mathematics (Algebra, Geometry, Calculus, Combinatorics)", "Logical Reasoning"],
+    resources: [{ title: "ISI Sample Papers", url: "https://www.isical.ac.in/" }],
+    pyqs: [{ title: "ISI Past Papers", url: "https://www.isical.ac.in/" }],
+    quiz: [
+      { question: "ISI offers which UG programs?", options: ["B.Tech", "B.Stat & B.Math", "B.Sc Physics", "BBA"], answer: 1 },
+      { question: "ISI stands for?", options: ["Indian Science Institute", "Indian Statistical Institute", "Information Science India", "Integrated Science Institute"], answer: 1 },
+    ],
+  },
+  {
+    title: "GATE 2026 – Graduate Aptitude Test in Engineering",
+    category: "UG Entrance",
+    level: "College Student",
+    description: "National exam for PG admission at IITs/IISc and PSU recruitment. Exam Feb 2026; registration Sep–Oct 2025. 30 subject papers available.",
+    eligibility: "Final year UG or holders of UG/PG degree in engineering/science/arts/commerce.",
+    deadline: daysFromNow(159), // GATE 2026 registration
+    officialLink: "https://gate2026.iitr.ac.in/",
+    syllabus: ["General Aptitude (common)", "Engineering Mathematics (most papers)", "Subject specific (CS/EC/EE/ME/CE/CH etc.)"],
+    resources: [
+      { title: "GATE Overflow (CS)", url: "https://gateoverflow.in/" },
+      { title: "GATE Syllabus 2026", url: "https://gate2026.iitr.ac.in/" },
+    ],
+    pyqs: [
+      { title: "GATE 2025 Papers", url: "https://gate.iitb.ac.in/" },
+      { title: "GATE 2024 Papers", url: "https://gate.iitb.ac.in/" },
+    ],
+    quiz: [
+      { question: "GATE 2026 is conducted by?", options: ["NTA", "IIT Roorkee", "UGC", "AICTE"], answer: 1 },
+      { question: "GATE score validity?", options: ["1 year", "2 years", "3 years", "5 years"], answer: 2 },
     ],
   },
 
-  // ---------------- SCHOLARSHIPS ----------------
+  // ──────────────── SCHOLARSHIPS ────────────────
   {
-    title: "NSP - National Scholarship Portal",
+    title: "NSP – National Scholarship Portal 2025-26",
     category: "Scholarship",
     level: "All",
-    description: "One-stop solution for end-to-end scholarship process - submission, verification, sanction, and disbursal.",
-    eligibility: "Varies by sub-scheme; school, college, minority, etc.",
-    deadline: daysFromNow(20),
+    description: "One-stop solution for 50+ Central & State government scholarships — submission, verification, sanction, and disbursal via DBT. Application window: Oct–Dec 2025.",
+    eligibility: "Varies by sub-scheme; school, college, minority, OBC, PWD, etc.",
+    deadline: daysFromNow(183), // NSP 2025-26
     officialLink: "https://scholarships.gov.in/",
     syllabus: [],
     resources: [{ title: "NSP User Manual", url: "https://scholarships.gov.in/" }],
     pyqs: [],
     quiz: [
       { question: "NSP stands for?", options: ["National Student Programme", "National Scholarship Portal", "New Scholarship Plan", "National Skill Plan"], answer: 1 },
+      { question: "NSP disbursal happens via?", options: ["Cash", "Cheque", "DBT", "Post Office"], answer: 2 },
     ],
   },
   {
-    title: "INSPIRE Scholarship",
+    title: "INSPIRE Scholarship (SHE) 2025",
     category: "Scholarship",
     level: "UG Aspirant",
-    description: "Scholarship for Higher Education (SHE) under INSPIRE by DST for top science students pursuing BSc/Integrated MSc.",
-    eligibility: "Top 1% in Class 12 board OR top ranks in JEE/NEET; pursuing natural sciences.",
-    deadline: daysFromNow(48),
+    description: "Scholarship for Higher Education (SHE) under INSPIRE by DST — ₹80,000/year for top science students in BSc/Int.MSc. Applications open July–Sept 2025.",
+    eligibility: "Top 1% in Class 12 board OR JEE/NEET top rank; must pursue natural sciences at UG level.",
+    deadline: daysFromNow(152), // INSPIRE application
     officialLink: "https://online-inspire.gov.in/",
     syllabus: [],
-    resources: [{ title: "INSPIRE Guidelines", url: "https://online-inspire.gov.in/" }],
+    resources: [{ title: "INSPIRE Guidelines PDF", url: "https://online-inspire.gov.in/" }],
     pyqs: [],
     quiz: [
-      { question: "INSPIRE scholarship value per year?", options: ["Rs 40,000", "Rs 60,000", "Rs 80,000", "Rs 1,00,000"], answer: 2 },
+      { question: "INSPIRE scholarship annual value?", options: ["Rs 40,000", "Rs 60,000", "Rs 80,000", "Rs 1,00,000"], answer: 2 },
       { question: "INSPIRE is by which department?", options: ["UGC", "DST", "MHRD", "AICTE"], answer: 1 },
+      { question: "INSPIRE full form?", options: ["INnovate Science Pursuit for Inspired Research", "Indian National Scholarship Program", "INSPIRE Scholarship for Excellence", "Integrated National Program for Research"], answer: 0 },
     ],
   },
   {
-    title: "HDFC ECSS Scholarship",
+    title: "HDFC ECSS Scholarship 2025",
     category: "Scholarship",
     level: "All",
-    description: "HDFC Bank's Educational Crisis Scholarship Support for students whose family has faced personal/financial crises.",
-    eligibility: "Class 1 to PG; family income < 2.5 LPA; faced personal/financial crisis in last 3 years.",
-    deadline: daysFromNow(38),
+    description: "HDFC Bank's Educational Crisis Scholarship Support — up to ₹75,000 for students whose family faced personal or financial crises. Applications July–Sep 2025.",
+    eligibility: "Class 1 to PG; family income < ₹2.5 LPA; faced personal/financial crisis in last 3 years.",
+    deadline: daysFromNow(106), // HDFC application
     officialLink: "https://www.hdfcbank.com/personal/about-us/csr/parivartan",
     syllabus: [],
-    resources: [{ title: "HDFC Parivartan", url: "https://www.hdfcbank.com/" }],
+    resources: [{ title: "HDFC Parivartan CSR", url: "https://www.hdfcbank.com/" }],
     pyqs: [],
     quiz: [
-      { question: "HDFC ECSS is by which company?", options: ["HDFC Life", "HDFC Bank", "HDFC AMC", "HDFC ERGO"], answer: 1 },
+      { question: "HDFC ECSS maximum scholarship amount?", options: ["Rs 25,000", "Rs 50,000", "Rs 75,000", "Rs 1,00,000"], answer: 2 },
+      { question: "ECSS stands for?", options: ["Educational Credit Scholarship Scheme", "Educational Crisis Scholarship Support", "External College Support Scheme", "Enhanced CSR Support System"], answer: 1 },
     ],
   },
   {
-    title: "Vidyasaarthi Scholarship",
+    title: "Vidyasaarthi Scholarship 2025-26",
     category: "Scholarship",
     level: "All",
-    description: "Common platform for various corporate scholarships managed by NSDL.",
-    eligibility: "Varies per scholarship.",
-    deadline: daysFromNow(42),
+    description: "Common platform for 30+ corporate scholarships from Tata Power, GIC, ONGC, BPCL and more — managed by NSDL e-Governance. Rolling applications.",
+    eligibility: "Varies per scholarship; typically school to PG.",
+    deadline: daysFromNow(228), // Vidyasaarthi cycle
     officialLink: "https://www.vidyasaarthi.co.in/",
     syllabus: [],
-    resources: [{ title: "Vidyasaarthi Schemes", url: "https://www.vidyasaarthi.co.in/" }],
+    resources: [{ title: "Vidyasaarthi Active Schemes", url: "https://www.vidyasaarthi.co.in/" }],
     pyqs: [],
     quiz: [
       { question: "Vidyasaarthi is managed by?", options: ["UGC", "AICTE", "NSDL", "SBI"], answer: 2 },
     ],
   },
   {
-    title: "Sitaram Jindal Foundation Scholarship",
+    title: "Sitaram Jindal Foundation Scholarship 2026",
     category: "Scholarship",
     level: "All",
-    description: "Merit-cum-means scholarship for students from school to PG and professional courses.",
-    eligibility: "Indian nationals; income criteria as per category.",
-    deadline: daysFromNow(60),
+    description: "Merit-cum-means scholarship for students from school to PG and professional courses. Applications open Jan 2026.",
+    eligibility: "Indian nationals; minimum 60% marks; family income criteria as per category.",
+    deadline: daysFromNow(334), // SJF application
     officialLink: "https://www.sitaramjindalfoundation.org/",
     syllabus: [],
-    resources: [{ title: "SJF Application Form", url: "https://www.sitaramjindalfoundation.org/" }],
+    resources: [{ title: "SJF Application Portal", url: "https://www.sitaramjindalfoundation.org/" }],
     pyqs: [],
     quiz: [
-      { question: "SJF is which type of scholarship?", options: ["Merit Only", "Means Only", "Merit-cum-Means", "Sports"], answer: 2 },
+      { question: "SJF scholarship type?", options: ["Merit Only", "Means Only", "Merit-cum-Means", "Sports"], answer: 2 },
     ],
   },
   {
-    title: "Reliance Foundation Scholarship",
+    title: "Reliance Foundation Scholarship 2025-26",
     category: "Scholarship",
     level: "All",
-    description: "UG and PG scholarships supporting India's brightest minds across science, technology, and humanities.",
-    eligibility: "Indian nationals enrolled in UG/PG programs; income < 15 LPA.",
-    deadline: daysFromNow(55),
+    description: "UG and PG scholarships for India's brightest minds across science, technology, humanities and arts. Applications July–August 2025.",
+    eligibility: "Indian nationals enrolled in UG/PG; family income < ₹15 LPA.",
+    deadline: daysFromNow(92), // Reliance application
     officialLink: "https://www.scholarships.reliancefoundation.org/",
     syllabus: [],
-    resources: [{ title: "Reliance Foundation", url: "https://www.scholarships.reliancefoundation.org/" }],
+    resources: [{ title: "Reliance Foundation Scholars", url: "https://www.scholarships.reliancefoundation.org/" }],
     pyqs: [],
     quiz: [
       { question: "Reliance Foundation Scholarship covers?", options: ["UG only", "PG only", "Both UG & PG", "School only"], answer: 2 },
     ],
   },
   {
-    title: "Tata Scholarship for Cornell University",
+    title: "Tata Scholarship – Cornell University 2026",
     category: "Scholarship",
     level: "College Student",
-    description: "Funded by Tata Education and Development Trust for Indian students at Cornell University.",
+    description: "Funded by Tata Education and Development Trust for Indian students admitted to Cornell University demonstrating financial need.",
     eligibility: "Admitted Indian students at Cornell; demonstrated financial need.",
-    deadline: daysFromNow(110),
+    deadline: daysFromNow(213), // Tata-Cornell application
     officialLink: "https://finaid.cornell.edu/types-aid/external-scholarships/tata-scholarship",
     syllabus: [],
-    resources: [{ title: "Cornell Finaid", url: "https://finaid.cornell.edu/" }],
+    resources: [{ title: "Cornell Financial Aid", url: "https://finaid.cornell.edu/" }],
     pyqs: [],
     quiz: [
-      { question: "Tata Scholarship at Cornell is for?", options: ["Indian students", "All Asian students", "All international students", "Tata employees"], answer: 0 },
+      { question: "Tata Scholarship at Cornell is for?", options: ["Indian students", "All Asian students", "All international students", "Tata employees' children"], answer: 0 },
     ],
   },
 
-  // ---------------- COLLEGE / SKILL ----------------
+  // ──────────────── COLLEGE / SKILL / INTERNSHIP ────────────────
   {
-    title: "Smart India Hackathon (SIH)",
+    title: "Smart India Hackathon 2025 (SIH)",
     category: "College/Skill",
     level: "College Student",
-    description: "Nationwide initiative by MoE to provide students a platform to solve government and industry problems.",
-    eligibility: "Students of higher education institutions.",
-    deadline: daysFromNow(50),
+    description: "Nationwide 36-hour hackathon by MoE Innovation Cell for students to solve real government and industry problems. Internal rounds at colleges: Sep 2025.",
+    eligibility: "Students of higher education institutions; teams of 6.",
+    deadline: daysFromNow(123), // SIH internal rounds
     officialLink: "https://sih.gov.in/",
-    syllabus: ["Software Edition", "Hardware Edition - 36hr / 5-day hackathon"],
-    resources: [{ title: "SIH Problem Statements", url: "https://sih.gov.in/" }],
+    syllabus: ["Software Edition (36hr)", "Hardware Edition (5-day)"],
+    resources: [{ title: "SIH Problem Statements 2025", url: "https://sih.gov.in/" }],
     pyqs: [],
     quiz: [
       { question: "SIH is conducted by?", options: ["AICTE", "MoE Innovation Cell", "UGC", "MeitY"], answer: 1 },
-      { question: "SIH duration for software edition?", options: ["12hrs", "24hrs", "36hrs", "48hrs"], answer: 2 },
+      { question: "SIH Software Edition duration?", options: ["12hrs", "24hrs", "36hrs", "48hrs"], answer: 2 },
+      { question: "Team size for SIH?", options: ["3", "4", "5", "6"], answer: 3 },
     ],
   },
   {
-    title: "Google Summer of Code (GSoC)",
+    title: "Google Summer of Code 2026 (GSoC)",
     category: "College/Skill",
     level: "College Student",
-    description: "Global, online program focused on bringing new contributors into open source software development.",
-    eligibility: "18+; new and experienced open source contributors.",
-    deadline: daysFromNow(95),
+    description: "Google's annual program bringing new contributors into open source. Work with a mentoring organization for 3 months. Stipend: $1500–$3000 USD.",
+    eligibility: "18+ years old; new to or experienced in open source contributions.",
+    deadline: daysFromNow(275), // GSoC 2026 proposals
     officialLink: "https://summerofcode.withgoogle.com/",
-    syllabus: ["Open Source contribution", "Project proposal writing"],
+    syllabus: ["Open Source contribution", "Project proposal writing", "Git/GitHub workflow"],
     resources: [
       { title: "GSoC Student Guide", url: "https://google.github.io/gsocguides/student/" },
-      { title: "GSoC Organisations List", url: "https://summerofcode.withgoogle.com/programs/2024/organizations" },
+      { title: "GSoC Organizations 2025", url: "https://summerofcode.withgoogle.com/" },
     ],
     pyqs: [],
     quiz: [
-      { question: "GSoC is conducted by?", options: ["Microsoft", "Meta", "Google", "GitHub"], answer: 2 },
+      { question: "GSoC is run by?", options: ["Microsoft", "Meta", "Google", "GitHub"], answer: 2 },
       { question: "GSoC focuses on?", options: ["Game Dev", "Open Source", "AI Research", "Hardware"], answer: 1 },
       { question: "Minimum age for GSoC?", options: ["16", "17", "18", "21"], answer: 2 },
     ],
   },
   {
-    title: "Codeforces Educational Rounds",
+    title: "Codeforces Competitive Programming (Regular Rounds)",
     category: "College/Skill",
     level: "College Student",
-    description: "Regular competitive programming contests on Codeforces for skill building and ranking.",
+    description: "Regular Div 1/2/3/4 programming contests on Codeforces every week. Improve your rating and problem-solving skills. Next round: check codeforces.com.",
     eligibility: "Anyone with a Codeforces account.",
-    deadline: daysFromNow(7),
+    deadline: daysFromNow(45), // Codeforces next round
     officialLink: "https://codeforces.com/",
-    syllabus: ["Algorithms", "Data Structures", "Math"],
-    resources: [{ title: "CP Algorithms", url: "https://cp-algorithms.com/" }],
+    syllabus: ["Algorithms", "Data Structures", "Dynamic Programming", "Graph Theory", "Math"],
+    resources: [
+      { title: "CP Algorithms Handbook", url: "https://cp-algorithms.com/" },
+      { title: "Codeforces EDU", url: "https://codeforces.com/edu/courses" },
+    ],
     pyqs: [{ title: "Past Codeforces Rounds", url: "https://codeforces.com/contests" }],
     quiz: [
-      { question: "Codeforces is a platform for?", options: ["Web design", "Competitive programming", "Trading", "ML"], answer: 1 },
+      { question: "Codeforces is a platform for?", options: ["Web design", "Competitive Programming", "Trading", "ML"], answer: 1 },
+      { question: "Codeforces Div 1 is for?", options: ["Beginners", "Intermediate", "Top-rated users", "School students"], answer: 2 },
     ],
   },
   {
-    title: "IIT Research Internships (Summer)",
+    title: "IIT Research Internships (SURGE / SoP / SRIC) 2026",
     category: "Internship",
     level: "College Student",
-    description: "Summer research internships at IITs across departments — IITB SoP, IITM Summer Fellowship, IITK SURGE, IITGn etc.",
-    eligibility: "UG students of recognized institutes; CGPA criteria vary.",
-    deadline: daysFromNow(90),
-    officialLink: "https://www.iitb.ac.in/",
-    syllabus: ["Specific to research area"],
-    resources: [{ title: "IITB SoP", url: "https://www.iitb.ac.in/" }],
+    description: "Summer research internships at IITs — IITK SURGE, IITB SoP, IITM SRIC, IITGn etc. Apply individually to faculty. Deadline varies by IIT: Jan–Feb 2026.",
+    eligibility: "Pre-final or final year UG students of AICTE/UGC recognized institutions; CGPA ≥ 7.5.",
+    deadline: daysFromNow(275), // IIT Research deadline
+    officialLink: "https://www.iitk.ac.in/dord/surge",
+    syllabus: ["Specific to research area chosen"],
+    resources: [
+      { title: "IITK SURGE Portal", url: "https://www.iitk.ac.in/dord/surge" },
+      { title: "IITB SoP Portal", url: "https://www.iitb.ac.in/" },
+    ],
     pyqs: [],
     quiz: [
-      { question: "IITM summer fellowship is for?", options: ["School", "Class 12", "UG students", "PG only"], answer: 2 },
+      { question: "SURGE program is at?", options: ["IITB", "IITK", "IITM", "IITKGP"], answer: 1 },
+      { question: "Target students for IIT summer internships?", options: ["School", "Class 12", "UG College Students", "PG only"], answer: 2 },
     ],
   },
   {
-    title: "Microsoft Engage / Learn Internships",
+    title: "Microsoft Internship & Engage Program 2025",
     category: "Internship",
     level: "College Student",
-    description: "Microsoft mentorship and internship programs aimed at student developers in India.",
-    eligibility: "Pre-final and final year engineering students.",
-    deadline: daysFromNow(78),
+    description: "Microsoft India internship and mentorship programs for student developers. Roles in SWE, PM, data science. Applications typically Aug–Sep.",
+    eligibility: "Pre-final and final year engineering students; strong DSA and coding skills.",
+    deadline: daysFromNow(152), // Microsoft deadline
     officialLink: "https://careers.microsoft.com/students/",
-    syllabus: ["Programming", "Problem solving", "System design basics"],
-    resources: [{ title: "Microsoft Learn", url: "https://learn.microsoft.com/" }],
+    syllabus: ["Data Structures & Algorithms", "System Design basics", "Behavioural interview prep"],
+    resources: [
+      { title: "Microsoft Learn", url: "https://learn.microsoft.com/" },
+      { title: "LeetCode DSA", url: "https://leetcode.com/" },
+    ],
     pyqs: [],
     quiz: [
-      { question: "Microsoft Engage is targeted at?", options: ["School students", "All employees", "College students", "Senior engineers"], answer: 2 },
+      { question: "Microsoft Engage targets?", options: ["School students", "All employees", "College students", "Senior engineers"], answer: 2 },
     ],
   },
   {
-    title: "ICPC - International Collegiate Programming Contest",
+    title: "ICPC – International Collegiate Programming Contest 2025-26",
     category: "College/Skill",
     level: "College Student",
-    description: "World's most prestigious programming contest for university students - Regionals, then World Finals.",
-    eligibility: "Teams of 3 from any university; age and study limits apply.",
-    deadline: daysFromNow(100),
+    description: "World's most prestigious programming contest. Asia-West Regional rounds Nov–Dec 2025; World Finals 2026. Register through ICPC.global by Sep 2025.",
+    eligibility: "Teams of 3 university students; at most 5 ICPC contest years; under 24 years old.",
+    deadline: daysFromNow(137), // ICPC regional registration
     officialLink: "https://icpc.global/",
-    syllabus: ["Advanced Algorithms", "Data Structures", "Math", "Graph Theory"],
-    resources: [{ title: "ICPC Resources", url: "https://icpc.global/community/resources" }],
+    syllabus: ["Advanced Algorithms", "Data Structures", "Graph Theory", "Math", "Geometry"],
+    resources: [
+      { title: "ICPC Resources", url: "https://icpc.global/community/resources" },
+      { title: "Competitive Programmer's Handbook", url: "https://codeforces.com/blog/entry/54618" },
+    ],
     pyqs: [{ title: "ICPC Past Problems", url: "https://icpc.global/" }],
     quiz: [
       { question: "ICPC team size?", options: ["1", "2", "3", "4"], answer: 2 },
-    ],
-  },
-  {
-    title: "GATE - Graduate Aptitude Test in Engineering",
-    category: "UG Entrance",
-    level: "College Student",
-    description: "National exam for admission to PG programs at IITs/IISc and PSU recruitment.",
-    eligibility: "Final year UG or holders of UG/PG degree in engineering/science/arts/commerce.",
-    deadline: daysFromNow(120),
-    officialLink: "https://gate.iitb.ac.in/",
-    syllabus: ["General Aptitude", "Engineering Mathematics", "Subject specific (CS/EC/EE/ME etc.)"],
-    resources: [{ title: "GATE Overflow", url: "https://gateoverflow.in/" }],
-    pyqs: [{ title: "GATE Past Papers", url: "https://gate.iitb.ac.in/" }],
-    quiz: [
-      { question: "GATE is conducted by?", options: ["NTA", "IISc & IITs (rotating)", "UGC", "AICTE"], answer: 1 },
+      { question: "ICPC India comes under which region?", options: ["Asia-South", "Asia-West", "Asia-Pacific", "South Asia"], answer: 1 },
     ],
   },
 
-  // A few past-deadline opportunities (so the "Past" tab is not empty)
+  // ──────────────── PAST (for Past tab demo) ────────────────
   {
-    title: "JEE Main 2025 January Session (Past)",
+    title: "JEE Main 2025 – Session 2 (Past)",
     category: "UG Entrance",
     level: "Class 11-12",
-    description: "January session of JEE Main 2025 - kept here for reference, syllabus and PYQs.",
+    description: "Session 2 of JEE Main 2025 held April 2-9, 2025. Result declared May 2025. Kept here for syllabus and PYQ access for 2026 preparation.",
     eligibility: "Class 12 with PCM.",
-    deadline: daysFromNow(-30),
+    deadline: daysFromNow(-60), // JEE Main 2025 Session 2 past
     officialLink: "https://jeemain.nta.nic.in/",
     syllabus: ["Physics", "Chemistry", "Mathematics"],
-    resources: [{ title: "JEE Main Resources", url: "https://jeemain.nta.nic.in/" }],
-    pyqs: [{ title: "JEE Main Jan 2025", url: "https://jeemain.nta.nic.in/" }],
+    resources: [{ title: "JEE Main 2025 Resources", url: "https://jeemain.nta.nic.in/" }],
+    pyqs: [
+      { title: "JEE Main April 2025 Paper", url: "https://jeemain.nta.nic.in/" },
+      { title: "JEE Main January 2025 Paper", url: "https://jeemain.nta.nic.in/" },
+    ],
     quiz: [
-      { question: "JEE Main 2025 January session conducted by?", options: ["NTA", "IIT", "NCERT", "CBSE"], answer: 0 },
+      { question: "JEE Main 2025 Session 2 was held in?", options: ["January", "February", "March", "April"], answer: 3 },
+      { question: "JEE Main conducted by?", options: ["NTA", "IIT", "NCERT", "CBSE"], answer: 0 },
     ],
   },
   {
-    title: "NEET UG 2024 (Past)",
+    title: "NEET UG 2025 (Past)",
     category: "UG Entrance",
     level: "Class 11-12",
-    description: "Past edition of NEET UG kept for syllabus, resources and PYQ access.",
+    description: "NEET UG 2025 conducted on May 4, 2025. Results declared June 2025. Use this for PYQs and syllabus reference for NEET 2026 preparation.",
     eligibility: "Class 12 with PCB.",
-    deadline: daysFromNow(-90),
+    deadline: daysFromNow(-30), // NEET 2025 past
     officialLink: "https://neet.nta.nic.in/",
-    syllabus: ["Physics", "Chemistry", "Biology"],
-    resources: [{ title: "NEET Resources", url: "https://neet.nta.nic.in/" }],
-    pyqs: [{ title: "NEET 2024 Question Paper", url: "https://neet.nta.nic.in/" }],
+    syllabus: ["Physics", "Chemistry", "Botany", "Zoology"],
+    resources: [{ title: "NEET 2026 Prep Resources", url: "https://neet.nta.nic.in/" }],
+    pyqs: [
+      { title: "NEET 2025 Question Paper (All Sets)", url: "https://neet.nta.nic.in/" },
+      { title: "NEET 2024 Question Paper", url: "https://neet.nta.nic.in/" },
+    ],
     quiz: [
-      { question: "NEET 2024 had how many questions?", options: ["180", "200", "220", "150"], answer: 1 },
+      { question: "NEET 2025 exam date?", options: ["April 20", "May 4", "June 1", "March 15"], answer: 1 },
+      { question: "NEET total marks?", options: ["360", "600", "720", "800"], answer: 2 },
+    ],
+  },
+  {
+    title: "GSoC 2025 (Past)",
+    category: "College/Skill",
+    level: "College Student",
+    description: "Google Summer of Code 2025 — contributor applications closed April 8, 2025. Selected contributors worked with open source orgs May–August 2025.",
+    eligibility: "18+ years old.",
+    deadline: daysFromNow(-45), // GSoC 2025 past
+    officialLink: "https://summerofcode.withgoogle.com/",
+    syllabus: ["Open Source contribution", "Project proposal"],
+    resources: [{ title: "GSoC 2025 Results", url: "https://summerofcode.withgoogle.com/" }],
+    pyqs: [],
+    quiz: [
+      { question: "GSoC 2025 stipend range?", options: ["$500-$1000", "$1500-$3300", "$5000-$7000", "No stipend"], answer: 1 },
     ],
   },
 ];
@@ -607,19 +681,18 @@ async function run(): Promise<void> {
   await mongoose.connect(MONGODB_URI as string);
   console.log("Connected to MongoDB");
 
-  // Wipe existing data
   await Opportunity.deleteMany({});
   await User.deleteMany({});
   console.log("Cleared existing collections");
 
-  // Insert opportunities
   const inserted = await Opportunity.insertMany(opportunities);
   console.log(`Inserted ${inserted.length} opportunities`);
 
-  // Create admin and demo student
-  const adminPwd = await hashPassword("admin123");
+  const adminPwd   = await hashPassword("admin123");
+  const demoPwd    = await hashPassword("demo123");
   const studentPwd = await hashPassword("student123");
 
+  // Admin account — full access
   await User.create({
     name: "Admin",
     email: "admin@opportunityhub.com",
@@ -628,19 +701,32 @@ async function run(): Promise<void> {
     educationLevel: "College Student",
   });
 
+  // Demo presenter account — also admin so evaluators see full features
   await User.create({
-    name: "Demo Student",
+    name: "Demo Presenter",
+    email: "demo@opportunityhub.com",
+    password: demoPwd,
+    role: "admin",
+    educationLevel: "College Student",
+    savedOpportunities: inserted.slice(0, 5).map((o) => o._id),
+    progress: 60,
+  });
+
+  // Student demo account — regular student view
+  await User.create({
+    name: "Aryan Mehta",
     email: "student@opportunityhub.com",
     password: studentPwd,
     role: "student",
     educationLevel: "Class 11-12",
-    savedOpportunities: inserted.slice(0, 3).map((o) => o._id),
-    progress: 25,
+    savedOpportunities: inserted.slice(0, 4).map((o) => o._id),
+    progress: 35,
   });
 
-  console.log("Seed complete:");
-  console.log("  Admin:   admin@opportunityhub.com / admin123");
-  console.log("  Student: student@opportunityhub.com / student123");
+  console.log("\nSeed complete:");
+  console.log("  Admin:    admin@opportunityhub.com   / admin123");
+  console.log("  Presenter: demo@opportunityhub.com   / demo123  (admin role)");
+  console.log("  Student:  student@opportunityhub.com / student123");
 
   await mongoose.disconnect();
   process.exit(0);

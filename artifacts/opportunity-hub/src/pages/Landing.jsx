@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
+import Logo from "../components/common/Logo.jsx";
 
 /* ─── data ─────────────────────────────────────────────── */
 const NAV_LINKS = [
@@ -8,6 +9,33 @@ const NAV_LINKS = [
   { label: "Reviews", href: "#reviews" },
   { label: "Tech Stack", href: "#stack" },
   { label: "FAQ", href: "#faq" },
+];
+
+const QUIZ_DEMO = [
+  {
+    q: "NEET UG 2025 was conducted on which date?",
+    opts: ["April 20, 2025", "May 4, 2025", "June 1, 2025", "March 15, 2025"],
+    ans: 1,
+    cat: "Medical Entrance",
+  },
+  {
+    q: "JEE Advanced is conducted by?",
+    opts: ["NTA", "CBSE", "Rotating IITs", "MHRD"],
+    ans: 2,
+    cat: "Engineering Entrance",
+  },
+  {
+    q: "INSPIRE scholarship is awarded by which ministry?",
+    opts: ["Education", "Finance", "Science & Technology", "Health"],
+    ans: 2,
+    cat: "Scholarship",
+  },
+  {
+    q: "GATE 2026 is organized by?",
+    opts: ["NTA", "IIT Roorkee", "UGC", "AICTE"],
+    ans: 1,
+    cat: "PG Entrance",
+  },
 ];
 
 const STATS = [
@@ -252,6 +280,71 @@ function Stars({ n }) {
   );
 }
 
+function QuizDemo() {
+  const [idx, setIdx] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const q = QUIZ_DEMO[idx];
+
+  const next = () => { setIdx((i) => (i + 1) % QUIZ_DEMO.length); setSelected(null); };
+
+  return (
+    <div className="bg-white rounded-3xl border border-gray-100 shadow-xl p-7 max-w-lg mx-auto">
+      <div className="flex items-center justify-between mb-4">
+        <span className="px-2.5 py-1 bg-indigo-50 text-indigo-700 text-xs font-bold rounded-full">
+          {q.cat}
+        </span>
+        <span className="text-xs text-gray-400">
+          {idx + 1} / {QUIZ_DEMO.length}
+        </span>
+      </div>
+
+      <p className="text-base font-semibold text-gray-900 mb-5 leading-snug">{q.q}</p>
+
+      <div className="space-y-2.5">
+        {q.opts.map((opt, i) => {
+          let cls = "border border-gray-200 text-gray-700 hover:border-indigo-300 hover:bg-indigo-50";
+          if (selected !== null) {
+            if (i === q.ans) cls = "border-2 border-emerald-500 bg-emerald-50 text-emerald-800 font-semibold";
+            else if (i === selected) cls = "border-2 border-red-400 bg-red-50 text-red-700 line-through";
+            else cls = "border border-gray-100 text-gray-400";
+          }
+          return (
+            <button
+              key={i}
+              disabled={selected !== null}
+              onClick={() => setSelected(i)}
+              className={`w-full text-left px-4 py-3 rounded-xl text-sm transition ${cls}`}
+            >
+              <span className="font-bold mr-2 text-gray-400">
+                {String.fromCharCode(65 + i)}.
+              </span>
+              {opt}
+            </button>
+          );
+        })}
+      </div>
+
+      {selected !== null && (
+        <div className="mt-5 flex items-center justify-between">
+          <p className={`text-sm font-semibold ${selected === q.ans ? "text-emerald-600" : "text-red-600"}`}>
+            {selected === q.ans ? "✅ Correct!" : `❌ Answer: ${q.opts[q.ans]}`}
+          </p>
+          <button
+            onClick={next}
+            className="text-sm font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1"
+          >
+            Next question →
+          </button>
+        </div>
+      )}
+
+      {selected === null && (
+        <p className="text-xs text-gray-400 text-center mt-5">Click an option to check your answer</p>
+      )}
+    </div>
+  );
+}
+
 function FAQItem({ q, a }) {
   const [open, setOpen] = useState(false);
   return (
@@ -310,14 +403,18 @@ export default function Landing() {
         }`}
       >
         <div className="max-w-7xl mx-auto px-5 py-3 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 to-emerald-500 flex items-center justify-center text-white font-bold text-base shadow-sm">
-              O
-            </div>
-            <span className="font-bold text-gray-900 text-base">OpportunityHub</span>
+          <Link to="/">
+            <Logo size={34} showText />
           </Link>
 
           <nav className="hidden md:flex items-center gap-1">
+            <Link
+              to="/explore"
+              className="px-3 py-1.5 text-sm text-emerald-700 font-semibold hover:bg-emerald-50 rounded-lg transition flex items-center gap-1"
+            >
+              <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />
+              Explore Live
+            </Link>
             {NAV_LINKS.map((l) => (
               <button
                 key={l.label}
@@ -553,8 +650,47 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* ── QUIZ DEMO ────────────────────────────────────────── */}
+      <section className="py-24 px-5 bg-gray-50">
+        <div className="max-w-6xl mx-auto flex flex-col lg:flex-row items-center gap-16">
+          <div className="flex-1">
+            <span className="text-xs font-bold uppercase tracking-widest text-indigo-600">
+              Practice Quizzes
+            </span>
+            <h2 className="text-3xl md:text-4xl font-extrabold mt-2 mb-5 text-gray-900 leading-tight">
+              Test your exam knowledge<br />right here, right now.
+            </h2>
+            <p className="text-gray-500 text-base leading-relaxed mb-6">
+              Every opportunity on OpportunityHub comes with a built-in MCQ quiz based on its actual syllabus or past year patterns. Click an option on the right and see instant feedback — just like the real quiz inside the app.
+            </p>
+            <ul className="space-y-3">
+              {[
+                "Quizzes modelled on actual exam patterns",
+                "Instant correct/incorrect feedback",
+                "Score saved to your dashboard",
+                "Review wrong answers after submission",
+              ].map((item) => (
+                <li key={item} className="flex items-center gap-2.5 text-sm text-gray-600">
+                  <span className="w-5 h-5 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center flex-shrink-0 text-xs">✓</span>
+                  {item}
+                </li>
+              ))}
+            </ul>
+            <Link
+              to="/register"
+              className="inline-block mt-8 px-6 py-3 bg-indigo-600 text-white font-bold rounded-2xl hover:bg-indigo-700 transition shadow-md"
+            >
+              Start practicing free →
+            </Link>
+          </div>
+          <div className="flex-1 w-full max-w-lg">
+            <QuizDemo />
+          </div>
+        </div>
+      </section>
+
       {/* ── REVIEWS ─────────────────────────────────────────── */}
-      <section id="reviews" className="py-24 px-5 bg-gray-50">
+      <section id="reviews" className="py-24 px-5 bg-white">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <span className="text-xs font-bold uppercase tracking-widest text-amber-600">

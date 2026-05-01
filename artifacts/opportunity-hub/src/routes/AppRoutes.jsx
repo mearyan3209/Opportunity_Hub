@@ -14,6 +14,7 @@ import Quiz from "../pages/quiz/Quiz.jsx";
 import AdminPanel from "../pages/admin/AdminPanel.jsx";
 import OpportunityForm from "../pages/admin/OpportunityForm.jsx";
 import Landing from "../pages/Landing.jsx";
+import Explore from "../pages/Explore.jsx";
 
 export default function AppRoutes() {
   const { user } = useAuth();
@@ -25,6 +26,7 @@ export default function AppRoutes() {
         path="/"
         element={user ? <Navigate to="/dashboard" replace /> : <Landing />}
       />
+      <Route path="/explore" element={<Explore />} />
       <Route
         path="/login"
         element={user ? <Navigate to="/dashboard" replace /> : <Login />}
