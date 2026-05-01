@@ -15,6 +15,7 @@ import AdminPanel from "../pages/admin/AdminPanel.jsx";
 import OpportunityForm from "../pages/admin/OpportunityForm.jsx";
 import Landing from "../pages/Landing.jsx";
 import Explore from "../pages/Explore.jsx";
+import DeadlineCalendar from "../pages/calendar/DeadlineCalendar.jsx";
 
 export default function AppRoutes() {
   const { user } = useAuth();
@@ -48,6 +49,7 @@ export default function AppRoutes() {
         <Route path="/opportunities" element={<OpportunityList />} />
         <Route path="/opportunities/:id" element={<OpportunityDetails />} />
         <Route path="/saved" element={<Saved />} />
+        <Route path="/calendar" element={<DeadlineCalendar />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/quiz/:opportunityId" element={<Quiz />} />
       </Route>
