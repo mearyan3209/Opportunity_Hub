@@ -1,3 +1,6 @@
-<svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect width="180" height="180" rx="36" fill="#FF3C00"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" width="180" height="180">
+	<rect width="180" height="180" rx="36" fill="#0EA5A4" />
+	<circle cx="54" cy="54" r="18" fill="#06b6d4" opacity="0.14" />
+	<text x="50%" y="52%" text-anchor="middle" dominant-baseline="middle"
+				font-family="Inter, Arial, sans-serif" font-weight="700" font-size="64" fill="#ffffff">OH</text>
 </svg>

@@ -27,16 +27,31 @@ export default function DeadlineCalendar() {
   const [selected, setSelected] = useState(null); // "YYYY-MM-DD"
 
   useEffect(() => {
-    axios.get("/api/opportunities")
-      .then(r => setOpps(r.data))
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
+  axios
+    .get("http://localhost:5000/api/opportunities")
+    .then((r) => {
+      const data =
+        Array.isArray(r.data)
+          ? r.data
+          : Array.isArray(r.data?.opportunities)
+          ? r.data.opportunities
+          : Array.isArray(r.data?.data)
+          ? r.data.data
+          : [];
+
+      setOpps(data);
+    })
+    .catch((err) => {
+      console.error("Calendar fetch error:", err);
+      setOpps([]);
+    })
+    .finally(() => setLoading(false));
+}, []);
 
   // Map date-key → list of opps
   const deadlineMap = useMemo(() => {
     const map = {};
-    opps.forEach(op => {
+    (Array.isArray(opps) ? opps : []).forEach((op) => {
       const dl = new Date(op.deadline);
       const key = toKey(dl);
       if (!map[key]) map[key] = [];
@@ -63,8 +78,9 @@ export default function DeadlineCalendar() {
   }, [opps, year, month]);
 
   // Expired opps — past deadline
-  const expiredCount = opps.filter(op => new Date(op.deadline) < Date.now()).length;
-
+  const expiredCount = (Array.isArray(opps) ? opps : []).filter(
+  op => new Date(op.deadline) < Date.now()
+).length;
   // Navigate months
   function prevMonth() {
     if (month === 0) { setYear(y => y - 1); setMonth(11); }

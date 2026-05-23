@@ -1,3 +1,12 @@
+import dotenv from "dotenv";
+import path from "path";
+
+dotenv.config({
+  path: path.resolve(process.cwd(), ".env"),
+});
+console.log("ENV CHECK:", process.env.MONGODB_URI);
+
+
 import app from "./app";
 import { logger } from "./lib/logger";
 import { connectDB } from "./lib/db";
@@ -18,11 +27,14 @@ if (Number.isNaN(port) || port <= 0) {
 
 async function start(): Promise<void> {
   await connectDB();
-  app.listen(port, (err) => {
+
+  // Bind explicitly to 0.0.0.0 so the server is reachable from other devices on the network
+  app.listen(port, "0.0.0.0", (err) => {
     if (err) {
       logger.error({ err }, "Error listening on port");
       process.exit(1);
     }
+
     logger.info({ port }, "OpportunityHub API listening");
   });
 }

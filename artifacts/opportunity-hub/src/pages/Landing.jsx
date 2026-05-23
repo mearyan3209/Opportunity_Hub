@@ -477,19 +477,15 @@ export default function Landing() {
               to="/register"
               className="px-8 py-3.5 text-base font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-2xl shadow-lg hover:shadow-indigo-200 transition-all"
             >
-              Start for free →
+              Join for free →
             </Link>
             <Link
               to="/login"
               className="px-8 py-3.5 text-base font-semibold text-indigo-700 bg-white border-2 border-indigo-200 hover:border-indigo-400 rounded-2xl transition-all"
             >
-              Try demo account
+              Sign in
             </Link>
           </div>
-
-          <p className="text-xs text-gray-400 font-mono">
-            Demo: student@opportunityhub.com / student123
-          </p>
         </div>
       </section>
 
@@ -804,7 +800,7 @@ export default function Landing() {
             Your next big opportunity<br />is one click away.
           </h2>
           <p className="text-indigo-200 text-lg mb-10">
-            Join now — it's free, no card needed, no spam.
+            Join now — it's free and no card is required.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4">
             <Link
@@ -820,9 +816,6 @@ export default function Landing() {
               Sign in
             </Link>
           </div>
-          <p className="text-indigo-300 text-xs mt-8 font-mono">
-            Demo: admin@opportunityhub.com / admin123
-          </p>
         </div>
       </section>
 

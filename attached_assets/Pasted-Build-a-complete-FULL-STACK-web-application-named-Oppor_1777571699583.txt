@@ -391,5 +391,3 @@ Run locally with:
 npm install
 npm run dev
 
-IMPORTANT:
-Build feature-complete version as much as possible. Do not skip backend logic. Do not simplify into static website.  I HAVE TO BUILSD AS ITS NOTHING EXTRA , i m in 4th sem use tools tech mentioned heer nothing more

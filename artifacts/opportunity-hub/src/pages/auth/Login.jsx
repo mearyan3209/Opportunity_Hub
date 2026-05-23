@@ -26,16 +26,6 @@ export default function Login() {
     }
   };
 
-  const fillDemo = (role) => {
-    if (role === "admin") {
-      setEmail("admin@opportunityhub.com");
-      setPassword("admin123");
-    } else {
-      setEmail("student@opportunityhub.com");
-      setPassword("student123");
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-emerald-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-xl border border-gray-100 p-8 fade-in">
@@ -49,8 +39,8 @@ export default function Login() {
           </div>
         </Link>
 
-        <h2 className="text-2xl font-bold text-gray-900 mb-1">Sign in</h2>
-        <p className="text-sm text-gray-500 mb-6">Continue to your dashboard</p>
+        <h2 className="text-2xl font-bold text-gray-900 mb-1">Sign in to OpportunityHub</h2>
+        <p className="text-sm text-gray-500 mb-6">Access opportunities, deadlines, quizzes, and your personal dashboard.</p>
 
         {error && (
           <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-100 text-red-700 text-sm">
@@ -65,6 +55,7 @@ export default function Login() {
             </label>
             <input
               type="email"
+              autoComplete="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -78,6 +69,7 @@ export default function Login() {
             </label>
             <input
               type="password"
+              autoComplete="current-password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -89,29 +81,6 @@ export default function Login() {
             {loading ? "Signing in..." : "Sign in"}
           </Button>
         </form>
-
-        <div className="my-6 flex items-center gap-3 text-xs text-gray-400">
-          <div className="flex-1 h-px bg-gray-200" />
-          Try a demo account
-          <div className="flex-1 h-px bg-gray-200" />
-        </div>
-
-        <div className="grid grid-cols-2 gap-2">
-          <button
-            type="button"
-            onClick={() => fillDemo("student")}
-            className="px-3 py-2 text-xs font-medium text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded-lg"
-          >
-            Student demo
-          </button>
-          <button
-            type="button"
-            onClick={() => fillDemo("admin")}
-            className="px-3 py-2 text-xs font-medium text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-lg"
-          >
-            Admin demo
-          </button>
-        </div>
 
         <p className="text-center text-sm text-gray-600 mt-6">
           New here?{" "}

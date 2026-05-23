@@ -1,8 +1,14 @@
 import axios from "axios";
 
-// All API requests go through the shared proxy at /api
+// Resolve API base URL:
+// - Prefer `VITE_API_BASE` if set (e.g. in .env)
+// - Otherwise use the current host with port 5000 (backend default)
+const envBase = import.meta.env.VITE_API_BASE;
+const apiPort = import.meta.env.VITE_API_PORT ?? 5000;
+const apiBase = envBase ?? `${window.location.protocol}//${window.location.hostname}:${apiPort}/api`;
+
 const api = axios.create({
-  baseURL: "/api",
+  baseURL: apiBase,
   headers: { "Content-Type": "application/json" },
 });
 
@@ -25,7 +31,6 @@ api.interceptors.response.use(
       if (!path.includes("/login") && !path.includes("/register")) {
         localStorage.removeItem("oh_token");
         localStorage.removeItem("oh_user");
-        // Soft redirect (don't blow up app routing)
         window.dispatchEvent(new Event("oh:logout"));
       }
     }

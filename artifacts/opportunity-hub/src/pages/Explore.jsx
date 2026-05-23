@@ -186,14 +186,14 @@ export default function Explore() {
         <div className="mt-12 bg-gradient-to-r from-indigo-600 to-emerald-600 rounded-3xl p-8 text-white text-center">
           <h3 className="text-2xl font-extrabold mb-2">Want to save deadlines, take quizzes & track progress?</h3>
           <p className="text-indigo-100 mb-6 text-sm">
-            Free account — takes 30 seconds. No card required.
+            Free account — no card required. Save deadlines and take quizzes in one place.
           </p>
           <div className="flex justify-center gap-3 flex-wrap">
             <Link
               to="/register"
               className="px-8 py-3 bg-white text-indigo-700 font-bold rounded-2xl hover:shadow-xl hover:scale-105 transition-all text-sm"
             >
-              Create free account →
+              Join for free →
             </Link>
             <Link
               to="/login"
@@ -202,9 +202,6 @@ export default function Explore() {
               Sign in
             </Link>
           </div>
-          <p className="text-indigo-300 text-xs mt-5 font-mono">
-            Demo: student@opportunityhub.com / student123
-          </p>
         </div>
       </div>
     </div>
