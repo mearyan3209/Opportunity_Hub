@@ -33,6 +33,7 @@ export default defineConfig({
     port,
     strictPort: true,
     host: "0.0.0.0",
+     allowedHosts: ["opportunity-hub-k84q.onrender.com"],
     fs: {
       strict: true,
     },
